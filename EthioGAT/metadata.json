@@ -1,0 +1,6 @@
+{
+  "name": "GAT Master",
+  "description": "Comprehensive GAT exam preparation app with 80-level journey, 950 questions across 11 chapters, 3,059 vocabulary entries across 244 clusters, and GAT trap mastery.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
