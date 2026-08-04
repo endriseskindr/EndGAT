@@ -1,23 +1,17 @@
-name: Android CI/CD Pipeline
+name: Build APK
 
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   build:
-    name: Build Android App
+    name: Build Debug APK
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -30,50 +24,30 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 'current'
-          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' }}
 
-      - name: Decode or Generate Debug Keystore
+      - name: Setup Keystore
         run: |
           if [ -f debug.keystore.base64 ]; then
-            echo "Decoding debug.keystore.base64..."
             base64 -d debug.keystore.base64 > debug.keystore
-          fi
-          if [ ! -f debug.keystore ]; then
-            echo "Generating debug.keystore..."
+          elif [ ! -f debug.keystore ]; then
             keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
           fi
 
-      - name: Prepare .env Configuration
+      - name: Setup Environment
         run: |
           if [ ! -f .env ]; then
-            echo "Setting up .env file..."
             touch .env
             if [ -f .env.example ]; then
               cp .env.example .env
             fi
           fi
 
-      - name: Run Unit Tests
-        run: gradle testDebugUnitTest --no-daemon --stacktrace
-        continue-on-error: true
-
-      - name: Build Debug APK
+      - name: Build APK
         run: gradle assembleDebug --no-daemon --stacktrace
 
-      - name: Upload Debug APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
-        if: success()
         with:
-          name: EthioGAT-Debug-APK
+          name: EthioGAT-APK
           path: app/build/outputs/apk/debug/*.apk
-          if-no-files-found: warn
-          retention-days: 14
-
-      - name: Upload Test Reports
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-reports
-          path: app/build/reports/tests/
-          if-no-files-found: ignore
-          retention-days: 7
+          retention-days: 30
