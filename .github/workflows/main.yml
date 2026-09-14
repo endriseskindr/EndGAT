@@ -43,6 +43,11 @@ jobs:
           cd dgh-fpl-manager
           pnpm install
 
+      - name: Run Verification Tests
+        run: |
+          cd dgh-fpl-manager
+          pnpm run validate
+
       - name: Prebuild Native Android Project
         run: |
           cd dgh-fpl-manager
