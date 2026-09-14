@@ -17,8 +17,8 @@ local.properties
 .env
 debug.keystore
 
+
 dgh-fpl-manager/node_modules/
 dgh-fpl-manager/.expo/
-dgh-fpl-manager/android/
-
-dgh-fpl-manager/
+dgh-fpl-manager/android/app/build/
+dgh-fpl-manager/android/.gradle/
